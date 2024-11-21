@@ -8,7 +8,7 @@ with read_base():
     from ...configs._base_.models.resnet50 import *
     from mmpretrain.configs._base_.schedules.imagenet_bs256 import *
 
-work_dir='/kaggle/working/experiment_result'
+work_dir = '/kaggle/working/experiment_result'
 data_root = 'dataset/final_malaria_full_class_classification'
 batch_size = 32
 training_epochs = 100
@@ -17,7 +17,6 @@ lrf = 0.01 # (float) final learning rate (lr0 * lrf)
 momentum = 0.937 # (float) SGD momentum/Adam beta1
 weight_decay = 0.0005 # (float) optimizer weight decay 5e-4
 num_workers = 4
-data_root = 'dataset/final_malaria_full_class_classification'
 
 #----------------------------------------------data settings----------------------------------
 
@@ -154,7 +153,6 @@ default_hooks = dict(
     checkpoint=dict(type='CheckpointHook', 
                     interval=1, 
                     max_keep_ckpts=2,
-                    save_best='accuracy/top1')  # Save checkpoints every epoch
+                    save_best='accuracy/top1'),  # Save checkpoints every epoch
+    visualization=dict(type='VisualizationHook', enable=True)
 )
-
-# work_dir = './work_dirs/resnet'
