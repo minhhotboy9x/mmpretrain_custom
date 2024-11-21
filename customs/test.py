@@ -37,6 +37,12 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     else:
         plt.show()
 
+def acc_each_label(confusion_matrix):
+    acc = []
+    for i in range(len(confusion_matrix)):
+        acc.append(confusion_matrix[i][i] / sum(confusion_matrix[i]))
+    return acc
+
 if __name__ == '__main__':
 
     cfg = Config.fromfile('customs/aggregation_configs/baseline1_resnet50_malaria_6_class.py')
@@ -50,11 +56,15 @@ if __name__ == '__main__':
     # runner.test_evaluator.metrics.append(
     #         DumpResults(out_file_path=cfg.work_dir + 'preds.json'))
 
-    confusion_matrix = metrics['confusion_matrix/result'].T
+    confusion_matrix = metrics['confusion_matrix/result']
     # mmengine.dump(metrics['confusion_matrix/result'].tolist(), cfg.work_dir + '/metrics.json')
 
     names = ('Ring', 'Trophozoite', 'Schizont', 'Gametocyte', 'Healthy RBC', 'Other')
     
     # Đặt đường dẫn nơi bạn muốn lưu confusion matrix
     save_path = cfg.work_dir + '/confusion_matrix.png'
-    plot_confusion_matrix(confusion_matrix, names, save_path=save_path)
+    plot_confusion_matrix(confusion_matrix.T, names, save_path=save_path)
+    acc = acc_each_label(confusion_matrix)
+    print("Accuracy of each class:")
+    print(names)
+    print(acc)
