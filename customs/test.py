@@ -53,6 +53,7 @@ if __name__ == '__main__':
     cfg.test_cfg.fp16 = True
     runner = Runner.from_cfg(cfg)
     metrics = runner.test()
+    print('--------------------------------------------------')
     # runner.test_evaluator.metrics.append(
     #         DumpResults(out_file_path=cfg.work_dir + 'preds.json'))
 

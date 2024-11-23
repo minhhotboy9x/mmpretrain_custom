@@ -156,3 +156,5 @@ default_hooks = dict(
                     save_best='accuracy/top1'),  # Save checkpoints every epoch
     visualization=dict(type='VisualizationHook', enable=True)
 )
+
+randomness = dict(seed=0, deterministic=True)
