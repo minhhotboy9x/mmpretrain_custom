@@ -147,7 +147,7 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
             val_loop.set_postfix({
                 "Val_loss": val_loss.item(),
             })
-            
+
             save_image(images[0].cpu(), os.path.join(log_dir, f"original_batch_{0}.png"))
             save_image(gen_images[0].cpu(), os.path.join(log_dir, f"reconstructed_batch_{0}.png"))
             save_image(images[-1].cpu(), os.path.join(log_dir, f"original_batch_{1}.png"))
@@ -155,12 +155,24 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
             
         if val_loss < best_loss:
             best_loss = val_loss
-            torch.save(model.state_dict(), os.path.join(log_dir, 'best.pt'))  # Lưu mô hình tốt nhất
+            torch.save({'model': model.state_dict(),
+                        'args': model.args,
+                        'optimizer': optimizer.state_dict(),
+                        'scaler': scaler.state_dict(),
+                        'epoch': epoch,
+                        'loss': val_loss},
+                        os.path.join(log_dir, 'best.pt'))  # Lưu mô hình tốt nhất
 
         writer.add_scalar('Val/Total_Loss', val_loss / len(val_loader), epoch)
 
         # Lưu mô hình cuối cùng sau mỗi epoch
-        torch.save(model.state_dict(), os.path.join(log_dir, 'last.pt'))  # Lưu mô hình cuối cùng
+        torch.save({'model': model.state_dict(),
+                    'args': model.args,
+                    'optimizer': optimizer.state_dict(),
+                    'scaler': scaler.state_dict(),
+                    'epoch': epoch,
+                    'loss': val_loss},
+                    os.path.join(log_dir, 'last.pt'))  # Lưu mô hình cuối cùng
 
 
     writer.close()

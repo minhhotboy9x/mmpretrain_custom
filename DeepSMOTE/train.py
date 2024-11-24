@@ -165,10 +165,22 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
             
         if val_loss < best_loss:
             best_loss = val_loss
-            torch.save(model.state_dict(), os.path.join(log_dir, 'best.pt'))  # Lưu mô hình tốt nhất
+            torch.save({'model': model.state_dict(),
+                        'args': model.args,
+                        'optimizer': optimizer.state_dict(),
+                        'scaler': scaler.state_dict(),
+                        'epoch': epoch,
+                        'loss': val_loss},
+                        os.path.join(log_dir, 'best.pt'))  # Lưu mô hình tốt nhất  # Lưu mô hình tốt nhất
 
         # Lưu mô hình cuối cùng sau mỗi epoch
-        torch.save(model.state_dict(), os.path.join(log_dir, 'last.pt'))  # Lưu mô hình cuối cùng
+        torch.save({'model': model.state_dict(),
+                    'args': model.args,
+                    'optimizer': optimizer.state_dict(),
+                    'scaler': scaler.state_dict(),
+                    'epoch': epoch,
+                    'loss': val_loss},
+                    os.path.join(log_dir, 'last.pt'))  # Lưu mô hình cuối cùng
 
 
     writer.close()

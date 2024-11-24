@@ -70,6 +70,7 @@ class Decoder(nn.Module):
 class DeepSMOTE(nn.Module):
     def __init__(self, args):
         super(DeepSMOTE, self).__init__()
+        self.args = args
         self.encoder = Encoder(args)
         self.decoder = Decoder(args)
 
