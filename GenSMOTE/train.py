@@ -127,7 +127,7 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
 
             # Cập nhật progress bar
             train_loop.set_postfix({
-                "Total_Loss": loss.item(),
+                "Train_Loss": loss.item(),
             })
 
         # Log loss trung bình mỗi epoch
@@ -143,6 +143,10 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
                 labels = labels.to(device)
                 gen_images = model(images, labels)
                 val_loss += criterion(gen_images, images)
+
+            val_loop.set_postfix({
+                "Val_loss": val_loss.item(),
+            })
             
             save_image(images[0].cpu(), os.path.join(log_dir, f"original_batch_{0}.png"))
             save_image(gen_images[0].cpu(), os.path.join(log_dir, f"reconstructed_batch_{0}.png"))
