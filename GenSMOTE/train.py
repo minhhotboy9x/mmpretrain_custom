@@ -113,6 +113,10 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
             
             # Sử dụng GradScaler để tính toán và cập nhật gradient
             scaler.scale(loss).backward()
+            # Unscales the gradients of optimizer's assigned params in-place
+            scaler.unscale_(optimizer)
+            # Since the gradients of optimizer's assigned params are unscaled, clips as usual:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=10)
             scaler.step(optimizer)
             scaler.update()
 
