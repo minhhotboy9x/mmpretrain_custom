@@ -80,7 +80,7 @@ optimizer = optim.SGD(model.parameters(), lr=lr0, momentum=momentum, weight_deca
 scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=lr0*lrf)
 
 # ----------------- Training ----------------- #
-def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, device, log_dir="work_dirs/gensmote_image_logs"):
+def train(model, train_loader, val_loader, criterion, optimizer, scheduler, num_epochs, device, log_dir="work_dirs/gensmote_image_logs"):
     
     # Khởi tạo TensorBoard SummaryWriter
     writer = SummaryWriter(log_dir=log_dir)
@@ -133,7 +133,8 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
             train_loop.set_postfix({
                 "Train_Loss": loss.item(),
             })
-
+        if scheduler is not None:
+            scheduler.step()
         # Log loss trung bình mỗi epoch
         writer.add_scalar('Train/Total_Loss', running_loss / len(train_loader), epoch)
 
@@ -207,6 +208,6 @@ if __name__ == '__main__':
                                     shuffle=False)
 
     # Initialize models
-    train(model, train_loader, val_loader, criterion, optimizer, epochs, device)
+    train(model, train_loader, val_loader, criterion, optimizer, scheduler, epochs, device)
     
     
