@@ -57,7 +57,7 @@ if __name__ == '__main__':
     # runner.test_evaluator.metrics.append(
     #         DumpResults(out_file_path=cfg.work_dir + 'preds.json'))
 
-    confusion_matrix = metrics['confusion_matrix/result']
+    confusion_matrix = metrics['confusion_matrix/result'] # row: actual, col: predicted
     # mmengine.dump(metrics['confusion_matrix/result'].tolist(), cfg.work_dir + '/metrics.json')
 
     names = ('Ring', 'Trophozoite', 'Schizont', 'Gametocyte', 'Healthy RBC', 'Other')

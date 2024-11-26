@@ -150,27 +150,36 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
 
         # validation
         val_loss = 0.0
+        running_val_loss = 0.0
         val_loop = tqdm(val_loader, desc=f"Validate")
         for step, (images, labels) in enumerate(val_loop): 
             with torch.no_grad():
                 model.eval()
                 images = images.to(device)
                 gen_images = model(images)
-                val_loss += criterion(gen_images, images)
+                val_loss = criterion(gen_images, images)
+                running_val_loss += val_loss.item()
+
+            val_loop.set_postfix({
+                "Val_loss": val_loss.item(),
+            })
+
             
             save_image(images[0].cpu(), os.path.join(log_dir, f"original_batch_{0}.png"))
             save_image(gen_images[0].cpu(), os.path.join(log_dir, f"reconstructed_batch_{0}.png"))
             save_image(images[-1].cpu(), os.path.join(log_dir, f"original_batch_{1}.png"))
             save_image(gen_images[-1].cpu(), os.path.join(log_dir, f"reconstructed_batch_{1}.png"))
-            
-        if val_loss < best_loss:
-            best_loss = val_loss
+
+        writer.add_scalar('Val/Total_Loss', running_val_loss / len(val_loader), epoch)
+
+        if running_val_loss < best_loss:
+            best_loss = running_val_loss
             torch.save({'model': model.state_dict(),
                         'args': model.args,
                         'optimizer': optimizer.state_dict(),
                         'scaler': scaler.state_dict(),
                         'epoch': epoch,
-                        'loss': val_loss},
+                        'loss': running_val_loss},
                         os.path.join(log_dir, 'best.pt'))  # Lưu mô hình tốt nhất  # Lưu mô hình tốt nhất
 
         # Lưu mô hình cuối cùng sau mỗi epoch
@@ -179,7 +188,7 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
                     'optimizer': optimizer.state_dict(),
                     'scaler': scaler.state_dict(),
                     'epoch': epoch,
-                    'loss': val_loss},
+                    'loss': running_val_loss},
                     os.path.join(log_dir, 'last.pt'))  # Lưu mô hình cuối cùng
 
 
