@@ -23,7 +23,7 @@ num_workers = 4
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='RandomResizedCrop', scale = 224, crop_ratio_range=(0.08, 1.0)),
+    dict(type='RandomResizedCrop', scale = 224, crop_ratio_range=(0.8, 1.0)),
     dict(type='RandomFlip', prob= [0.25, 0.25], direction=['horizontal', 'vertical']), 
     #dict(type='RandAugment', policies=[dict(type='Rotate', magnitude_range=(0, 360))]),
     #dict(type='RandomRotate', max_angle = 180),

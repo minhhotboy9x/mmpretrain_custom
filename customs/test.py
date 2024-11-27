@@ -45,11 +45,11 @@ def acc_each_label(confusion_matrix):
 
 if __name__ == '__main__':
 
-    cfg = Config.fromfile('customs/aggregation_configs/baseline1_resnet50_malaria_6_class.py')
+    cfg = Config.fromfile('customs/aggregation_configs/baseline1_resnet50_malaria_pa3_7_class.py')
     # cfg = Config.fromfile('customs/aggregation_configs/config_aggregation_sanbox.py')
 
     cfg.work_dir = './work_dirs/my_sandbox'
-    cfg.load_from = './work_dirs/experiment_result/best_accuracy_top1_epoch_83.pth'
+    cfg.load_from = './work_dirs/experiment_result_pa3_res50_oversample/best_accuracy_top1_epoch_24.pth'
     cfg.test_cfg.fp16 = True
     runner = Runner.from_cfg(cfg)
     metrics = runner.test()
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     confusion_matrix = metrics['confusion_matrix/result'] # row: actual, col: predicted
     # mmengine.dump(metrics['confusion_matrix/result'].tolist(), cfg.work_dir + '/metrics.json')
 
-    names = ('Ring', 'Trophozoite', 'Schizont', 'Gametocyte', 'Healthy RBC', 'Other')
+    names = ('Ring', 'Trophozoite', 'Schizont', 'Gametocyte', 'Healthy', 'Other', 'Diff')
     
     # Đặt đường dẫn nơi bạn muốn lưu confusion matrix
     save_path = cfg.work_dir + '/confusion_matrix.png'
