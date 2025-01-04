@@ -1,0 +1,26 @@
+** Some module must notics
+
+##
+BaseModel is base for all algorithm model, if we want to 
+    def train_step(), val_step(), val_step() used in EpochBasedTrainLoop
+    
+    def forward(self,
+                inputs: torch.Tensor,
+                data_samples: Optional[list] = None,
+                mode: str = 'tensor') -> Union[Dict[str, torch.Tensor], list]:
+        """Returns losses or predictions of training, validation, testing, and
+        simple inference process.
+
+        ``forward`` method of BaseModel is an abstract method, its subclasses
+        must implement this method.
+
+        Accepts ``batch_inputs`` and ``data_sample`` processed by
+        :attr:`data_preprocessor`, and returns results according to mode
+        arguments.
+
+        During non-distributed training, validation, and testing process,
+        ``forward`` will be called by ``BaseModel.train_step``,
+        ``BaseModel.val_step`` and ``BaseModel.test_step`` directly.
+     
+
+EpochBasedTrainLoop contrain a loop for train, val, test. it ultilize BaseModel

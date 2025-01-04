@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # cfg = Config.fromfile('customs/aggregation_configs/config_aggregation_sanbox.py')
 
     cfg.work_dir = './work_dirs/my_sandbox'
-    cfg.load_from = './work_dirs/experiment_result_pa3_res50_oversample/best_accuracy_top1_epoch_24.pth'
+    cfg.load_from = './work_dirs/experiment_result_pa3_res50/best_accuracy_top1_epoch_94.pth'
     cfg.test_cfg.fp16 = True
     runner = Runner.from_cfg(cfg)
     metrics = runner.test()
