@@ -14,6 +14,7 @@ from customs.customed_hooks.true_false_visualization_hook import TFVisualization
 
 
 
+
 work_dir = '/kaggle/working/experiment_result'
 data_root = 'dataset/final_malaria_pa5_2+5_class_classification'
 batch_size = 32
@@ -59,8 +60,9 @@ train_dataloader = dict(
         with_label=True,
         pipeline=train_pipeline,
        ),
-    sampler=dict(type='DefaultSampler',
-                 shuffle=True,),
+    sampler=dict(type='MinorClassOversampler',
+                 shuffle=True,
+                 oversample_ratio=8.0,),
 
     collate_fn=dict(type='default_collate')
 )

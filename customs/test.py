@@ -1,6 +1,7 @@
+import os
+
 from mmengine.runner import Runner
 from mmengine.config import Config
-import mmengine
 from mmengine.evaluator import DumpResults
 import seaborn as sns
 import numpy as np
@@ -45,12 +46,19 @@ def acc_each_label(confusion_matrix):
 
 if __name__ == '__main__':
 
-    cfg = Config.fromfile('customs/aggregation_configs/baseline1_resnet50_malaria_pa3_7_class.py')
+    cfg = Config.fromfile('customs/aggregation_configs/baseline1_resnet50_2stages_malaria_pa5_2+5_class_oversample.py')
     # cfg = Config.fromfile('customs/aggregation_configs/config_aggregation_sanbox.py')
 
     cfg.work_dir = './work_dirs/my_sandbox'
-    cfg.load_from = './work_dirs/experiment_result_pa3_res50/best_accuracy_top1_epoch_94.pth'
+    cfg.load_from = './work_dirs/experiment_result_pa5_2stages_res50_oversamplex8/best_accuracy_top1_epoch_65.pth'
     cfg.test_cfg.fp16 = True
+    cfg.default_hooks.visualization.enable = True
+    cfg.default_hooks.visualization.interval = 1
+    cfg.default_hooks.visualization.show = False
+    cfg.default_hooks.visualization.wait_time = 2
+    cfg.default_hooks.visualization.out_dir = os.path.join(cfg.work_dir, 'visualization')
+    cfg.default_hooks.visualization.interval = 1
+
     runner = Runner.from_cfg(cfg)
     metrics = runner.test()
     print('--------------------------------------------------')
@@ -60,7 +68,7 @@ if __name__ == '__main__':
     confusion_matrix = metrics['confusion_matrix/result'] # row: actual, col: predicted
     # mmengine.dump(metrics['confusion_matrix/result'].tolist(), cfg.work_dir + '/metrics.json')
 
-    names = ('Ring', 'Trophozoite', 'Schizont', 'Gametocyte', 'Healthy', 'Other', 'Diff')
+    names = ('Ring', 'Trophozoite', 'Schizont', 'Gametocyte', 'Unparasitized', 'Diff')
     
     # Đặt đường dẫn nơi bạn muốn lưu confusion matrix
     save_path = cfg.work_dir + '/confusion_matrix.png'
