@@ -166,7 +166,7 @@ optim_wrapper = dict(
     type = 'AmpOptimWrapper',
     loss_scale='dynamic',
     optimizer=dict(type=SGD, lr=lr0, momentum=momentum, weight_decay=weight_decay),
-    clip_grad=dict(max_norm=10, norm_type=2)
+    # clip_grad=dict(max_norm=10, norm_type=2)
 )
 
 

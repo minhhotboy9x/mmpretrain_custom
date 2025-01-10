@@ -101,7 +101,7 @@ test_dataloader = dict(
         with_label=True, 
         pipeline=test_pipeline, 
        ),
-    sampler=dict(type='DefaultSampler'  , shuffle=False),
+    sampler=dict(type='DefaultSampler', shuffle=False),
     collate_fn=dict(type='default_collate')
 )
 test_cfg = dict(type = "TestLoop")
@@ -168,7 +168,7 @@ optim_wrapper = dict(
     type = 'AmpOptimWrapper',
     loss_scale='dynamic',
     optimizer=dict(type=SGD, lr=lr0, momentum=momentum, weight_decay=weight_decay),
-    clip_grad=dict(max_norm=10, norm_type=2)
+    # clip_grad=dict(max_norm=10, norm_type=2)
 )
 
 
