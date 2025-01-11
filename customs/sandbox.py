@@ -4,27 +4,22 @@ from mmpretrain.registry import MODELS
 from mmengine.config import read_base
 
 
-# x = torch.zeros(3, 5)
-# index = torch.tensor([[0, 1, 2, 0, 1, 0],
-#                       [1, 2, 0, 2, 1, 1],
-#                       [2, 0, 1, 2, 0, 2]])
-# src = torch.tensor([[1, 2, 3, 4, 5, 6],
-#                     [5, 4, 3, 2, 1, 6],
-#                     [1, 2, 3, 4, 5, 6]], dtype=torch.float32)
+# Tạo tensor 1 chiều
+# tensor = torch.tensor([3, 7, 1, 9, 7, 5])
 
-# # Gán giá trị từ src vào x tại các chỉ số trong index dọc theo dim=1
-# x.scatter_(dim=1, index=index, src=src)
+# # Giá trị cần tìm index
+# value = 0
 
-# print(x)
+# # Lấy index của phần tử
+# indices = torch.where(tensor == value)[0].item()
 
-# y = torch.tensor([[1, 2, 3, 4, 5, 6], [5, 4, 3, 2, 1, 6], [1, 2, 3, 4, 5, 6]], dtype=torch.float32)
+# print(indices)  # Output: tensor([1, 4])
 
-# print(y.repeat(2, 1))
 
-# default_scope = 'mmpretrain' # need to set
+default_scope = 'mmpretrain' # need to set
 
 # cfg = Config.fromfile('./customs/aggregation_configs/config_aggregation_sanbox.py')
-cfg = Config.fromfile('customs/aggregation_configs/baseline1_resnet50_2stages_malaria__pa5_2+5_class.py')
+cfg = Config.fromfile('customs/aggregation_configs/baseline1_resnet50_2stages_malaria_pa5_2+5_class.py')
 
 model = MODELS.build(cfg.model)
 
@@ -34,10 +29,10 @@ print(model)
 print('-------------------------')
 # Tạo dữ liệu giả lập
 
-dummy_input = torch.randn(2, 3, 224, 224)
+dummy_input = torch.randn(1, 3, 224, 224)
 
 # Forward dữ liệu qua mô hình
-output = model(dummy_input)
+output = model(dummy_input, mode = 'predict')
 
 # Kiểm tra đầu ra
 print(output)

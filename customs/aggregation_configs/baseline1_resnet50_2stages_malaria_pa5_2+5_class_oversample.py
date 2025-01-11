@@ -158,8 +158,8 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         to_rgb=True,
-        num_classes=6,
-        to_onehot=True,
+        # num_classes=6,
+        # to_onehot=True,
         ),
     )
 

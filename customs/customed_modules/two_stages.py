@@ -161,11 +161,15 @@ class TwoStagesClassifier(BaseModel):
         else:
             raise RuntimeError(f'Invalid mode "{mode}".')
 
-    def extract_feat(self, inputs: torch.Tensor):
+    def extract_feat(self, inputs: torch.Tensor, predict: bool = False):
         """Extract features from the input tensor."""
         device = next(self.parameters()).device
         preds = torch.zeros(inputs.size(0), self.num_all_classes).float().to(device)
+        preds2 = torch.zeros(inputs.size(0), self.num_all_classes).float().to(device)
         out1 = self.head(self.neck(self.backbone(inputs)))  # (N, num_first_classes)
+
+        if predict:
+            out1 = F.sigmoid(out1)
 
         first_stage_map_gt = self.first_stage_map_gt.to(device)
         stage1_class = torch.argmax(out1, dim=1) # (N, 1)
@@ -174,34 +178,53 @@ class TwoStagesClassifier(BaseModel):
         preds[mask] = preds[mask].scatter(1, first_stage_map_gt.repeat(mask.sum(), 1), 
                                           out1[mask, stage1_class[mask]].resize(mask.sum(), 1).float())
 
-        mask2 = ~mask
+        if predict:
+            mask2 = ~mask
+        else:
+            mask2 = torch.ones(inputs.size(0), dtype=torch.bool).to(device)
 
         if mask2.sum() == 0:
-            return preds
+            return preds, preds2, out1, torch.empty(0).to(device)
         
         second_stage_map_gt = self.second_stage_map_gt.to(device)
         out2 = self.head2(self.neck(self.backbone2(inputs[mask2])))
-        
-        preds[mask2] = preds[mask2].scatter(1, second_stage_map_gt.repeat(mask2.sum(), 1), 
+
+        if predict:
+            out2 = F.sigmoid(out2)
+
+        preds2[mask2] = preds2[mask2].scatter(1, second_stage_map_gt.repeat(mask2.sum(), 1), 
                                             out2.float())
 
-        return preds
+        return preds, preds2, out1, out2
     
     def loss(self, input: torch.Tensor, data_samples: List[DataSample]) -> dict:
         """Calculate the loss."""
-        cls_score = self.extract_feat(input)
-
+        preds, preds2, out1, out2 = self.extract_feat(input)
+        device = next(self.parameters()).device
+        first_stage_map_gt = self.first_stage_map_gt.to(device)
         if 'gt_score' in data_samples[0]:
             # Batch augmentation may convert labels to one-hot format scores.
             target = torch.stack([i.gt_score for i in data_samples])
         else:
             target = torch.cat([i.gt_label for i in data_samples])
-
+            target_stage1 = torch.cat([
+                            torch.nonzero(i.gt_label == first_stage_map_gt, as_tuple=True)[0]
+                            if torch.any(i.gt_label == first_stage_map_gt)
+                            else torch.tensor([self.first2second_stage_class]).to(device)
+                            for i in data_samples
+                        ])
         # compute loss
         losses = dict()
+        target = F.one_hot(target, self.num_all_classes).float()
+        target[:, self.first_stage_map_gt] = 0.0
+        target_stage1 = F.one_hot(target_stage1, self.head.num_classes).float()
+
         loss = self.loss_module(
-            cls_score, target, avg_factor=cls_score.size(0))
-        losses['loss'] = loss
+            preds2, target, avg_factor=preds2.size(0))
+        loss_stage1 = self.loss_module(
+            out1, target_stage1, avg_factor=out1.size(0))
+        
+        losses['loss'] = loss + loss_stage1
 
         return losses
     
@@ -225,12 +248,18 @@ class TwoStagesClassifier(BaseModel):
             List[DataSample]: A list of data samples which contains the
             predicted results.
         """
-        cls_score = self.extract_feat(input)
+        preds, preds2, out1, out2 = self.extract_feat(input, predict=True)
+        mask = torch.argmax(out1, dim=1) != self.first2second_stage_class
+        
+        cls_score = preds2
+        cls_score[mask] = preds[mask]
 
-        pred_scores = F.softmax(cls_score, dim=1)
+        # pred_scores = F.softmax(cls_score, dim=1)
+        pred_scores = cls_score
         pred_labels = pred_scores.argmax(dim=1, keepdim=True).detach()
 
         out_data_samples = []
+
         if data_samples is None:
             data_samples = [None for _ in range(pred_scores.size(0))]
 
