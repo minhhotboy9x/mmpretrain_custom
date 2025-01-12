@@ -19,7 +19,7 @@ from mmengine.config import read_base
 default_scope = 'mmpretrain' # need to set
 
 # cfg = Config.fromfile('./customs/aggregation_configs/config_aggregation_sanbox.py')
-cfg = Config.fromfile('customs/aggregation_configs/swin_small_224_malaria_pa5_2+5_class copy.py')
+cfg = Config.fromfile('customs/aggregation_configs/swin_small_224_malaria_pa5_2+5_class.py')
 
 model = MODELS.build(cfg.model)
 
