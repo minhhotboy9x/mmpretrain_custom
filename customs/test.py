@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # cfg = Config.fromfile('customs/aggregation_configs/config_aggregation_sanbox.py')
 
     cfg.work_dir = './work_dirs/my_sandbox'
-    cfg.load_from = './work_dirs/experiment_result_pa5_2stages_res50_oversamplex8/best_accuracy_top1_epoch_65.pth'
+    cfg.load_from = 'work_dirs/experiment_result_pa5_2stages_res50_oversamplex8/best_accuracy_top1_epoch_32.pth'
     cfg.test_cfg.fp16 = True
     cfg.default_hooks.visualization.enable = True
     cfg.default_hooks.visualization.interval = 1
